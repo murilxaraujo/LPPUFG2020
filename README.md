@@ -27,8 +27,8 @@ parâmetros:
 
 retorno: ```JWT```
 
-Descrição:``` Deve autenticar um usuário, caso ele já exista, ou criar uma nova conta caso o usuário não exista. A resposta deve ser um JWT que identificará o usuário nas requisições seguintes.
-```
+Descrição: ``` Deve autenticar um usuário, caso ele já exista, ou criar uma nova conta caso o usuário não exista. A resposta deve ser um JWT que identificará o usuário nas requisições seguintes.```
+
 ### /create - ```POST```
 
 headers: 
