@@ -17,6 +17,12 @@ Deverá ser desenvolvida uma API que encurte urls para o usuário e deverá segu
 9. Os parâmetros serão enviados pelo corpo em formato JSON, exceto para requisições do tipo GET, que não possuem corpo.
 10. Os dados podem ser persistidos em um DB SQL ou NOSQL
 
+## Objetivo
+
+O objetivo deste desafio é mostrar a eficiência e velocidade de processamento da linguagem Swift em relação a Javascript, avaliando também o tamanho total do projeto, incluindo as dependências.
+A avaliação em relação ao tamanho da api deve ser medida através do peso da imagem Docker
+A velociadade de processamento deverá ser medida com o tempo entre o envio da requisição e a resposta da API, podendo ser medido usando clientes como Postman, Insomnia ou CURL.
+
 ## Endpoints
 
 ### /auth - ```POST```
