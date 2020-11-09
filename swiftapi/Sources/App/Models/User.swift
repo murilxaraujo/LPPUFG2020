@@ -16,10 +16,10 @@ final class User: Model {
     @ID
     var id: UUID?
     
-    @Field("email")
+    @Field(key: "email")
     var email: String
     
-    @Field("passwordHash")
+    @Field(key: "passwordHash")
     var passwordHash: String
     
     init() {}
@@ -27,6 +27,6 @@ final class User: Model {
     init(id: UUID? = nil, email: String, password: String) {
         self.id = id
         self.email = email
-        self.passwordHash = passwordHash
+        self.passwordHash = password
     }
 }
