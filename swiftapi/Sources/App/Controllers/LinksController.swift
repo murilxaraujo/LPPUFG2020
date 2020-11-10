@@ -12,53 +12,64 @@ import FluentPostgresDriver
 
 struct LinksController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
-        routes.get("list") { (req) -> [[String: String]] in
+        routes.get("list") { (req) -> EventLoopFuture<[[String: String]]> in
             let userid = try req.jwt.verify(as: JWTToken.self).subject.value
-            let linksCreatedByUser = try Link.query(on: req.db).filter(\.$user == userid).all().wait()
-            let linksResponse = linksCreatedByUser.map { (link) -> [String: String] in
-                return [
-                    "id": link.id?.uuidString ?? "",
-                    "fullLink": link.fullLink,
-                    "shortLink": link.short
-                ]
-            }
-            return linksResponse
+            let response = Link.query(on: req.db).filter(\.$user == userid).all().flatMap({ (links) -> EventLoopFuture<[[String: String]]> in
+                let links = links.map { (link) -> [String: String] in
+                    return [
+                        "id": link.id?.uuidString ?? "",
+                        "fullLink": link.fullLink,
+                        "shortLink": link.short
+                    ]
+                }
+                return req.eventLoop.makeSucceededFuture(links)
+            })
+            return response
         }
         
-        routes.patch("hide") { (req) -> HTTPResponseStatus in
+        routes.patch("hide") { (req) -> EventLoopFuture<HTTPResponseStatus> in
             let userid = try req.jwt.verify(as: JWTToken.self).subject.value
             let linkID = try req.content.get(String.self, at: "URLID")
-            guard let link = try Link.find(UUID(uuidString: linkID), on: req.db).wait() else {
-                throw Abort(HTTPResponseStatus.notFound)
-            }
-            if link.user != userid {
-                throw Abort(HTTPResponseStatus.unauthorized)
-            }
-            link.hidden = true
-            try link.save(on: req.db).wait()
-            return HTTPResponseStatus.ok
+            let response = Link.find(UUID(uuidString: linkID), on: req.db).flatMap({ (link) -> EventLoopFuture<HTTPResponseStatus> in
+                guard let link = link else {
+                    return req.eventLoop.makeFailedFuture(Abort(HTTPResponseStatus.notFound))
+                }
+                if link.user != userid {
+                    return req.eventLoop.makeFailedFuture(Abort(HTTPResponseStatus.unauthorized))
+                }
+                link.hidden = true
+                return link.save(on: req.db).flatMap { (_) -> EventLoopFuture<HTTPResponseStatus> in
+                    return req.eventLoop.makeSucceededFuture(HTTPResponseStatus.ok)
+                }
+            })
+            return response
         }
         
-        routes.get(":identificador") { req -> Response in
+        routes.get(":identificador") { req -> EventLoopFuture<Response> in
             guard let short = req.parameters.get("identificador") else {
                 throw Abort(HTTPResponseStatus.badRequest)
             }
-            guard let link = try Link.query(on: req.db).filter(\.$short == short).first().wait()?.fullLink else {
-                throw Abort(HTTPResponseStatus.notFound)
+            let response = Link.query(on: req.db).filter(\.$short == short).first().flatMap { (link) -> EventLoopFuture<Response> in
+                if let link = link {
+                    return req.eventLoop.makeSucceededFuture(req.redirect(to: link.fullLink, type: .normal))
+                } else {
+                    return req.eventLoop.makeFailedFuture(Abort(HTTPResponseStatus.notFound))
+                }
             }
-            
-            return req.redirect(to: link, type: .normal)
+            return response
         }
         
-        routes.post("create") { (req) -> String in
+        routes.post("create") { (req) -> EventLoopFuture<String> in
             let userid = try req.jwt.verify(as: JWTToken.self).subject.value
             let linkToShorten = try req.content.get(String.self, at: "URL")
             let link = Link(user: userid, fullLink: linkToShorten)
-            try link.create(on: req.db).wait()
-            guard let id = link.id?.uuidString else {
-                throw Abort(HTTPResponseStatus.internalServerError)
+            let response = link.create(on: req.db).flatMap { (_) -> EventLoopFuture<String> in
+                guard let id = link.id?.uuidString else {
+                    return req.eventLoop.makeFailedFuture(Abort(HTTPResponseStatus.internalServerError))
+                }
+                return req.eventLoop.makeSucceededFuture(id)
             }
-            return id
+            return response
         }
     }
 }

@@ -2,7 +2,7 @@ import Vapor
 import Fluent
 import FluentPostgresDriver
 import JWT
-// configures your application
+
 public func configure(_ app: Application) throws {
     app.databases.use(.postgres(
                         hostname: Environment.get("dbhost") ?? "localhost",
