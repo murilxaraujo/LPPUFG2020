@@ -14,5 +14,6 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateLinks())
     app.passwords.use(.bcrypt)
     app.jwt.signers.use(.hs256(key: "lppehmuitobom"))
+    try app.autoMigrate().wait()
     try routes(app)
 }

@@ -67,7 +67,7 @@ struct LinksController: RouteCollection {
                 guard let id = link.id?.uuidString else {
                     return req.eventLoop.makeFailedFuture(Abort(HTTPResponseStatus.internalServerError))
                 }
-                return req.eventLoop.makeSucceededFuture(id)
+                return req.eventLoop.makeSucceededFuture(link.short)
             }
             return response
         }
