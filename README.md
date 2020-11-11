@@ -4,6 +4,8 @@ Para rodar o projeto em docker entre dentro da pasta contendo o arquivo docker-c
 
 ```docker-compose up```
 
+A aplicação será iniciada na url ```http://localhost:1234/```
+
 ## Desafio
 
 O arquivo do desafio pode ser encontrado [aqui](https://gitlab.com/lpp-es-2020-1/swift/desafios/-/blob/main/desafio.md)
