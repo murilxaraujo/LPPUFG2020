@@ -15,31 +15,46 @@ struct AuthController: RouteCollection {
         routes.post("auth") { (req) -> EventLoopFuture<String> in
             let userEmail: String = try req.content.get(String.self, at: "email")
             let userPassword: String = try req.content.get(String.self, at:"password")
-            
-            let response = req.db.query(User.self).filter(\.$email == userEmail).first().flatMapThrowing { (user) -> String in
+            let response = req.db.query(User.self).filter(\.$email == userEmail).first().flatMap { (user) -> EventLoopFuture<String> in
                 if let user = user {
-                    let authenticated = try req.password.verify(userPassword, created: user.passwordHash)
+                    var authenticated: Bool!
+                    do {
+                        authenticated = try req.password.verify(userPassword, created: user.passwordHash)
+                    } catch let e {
+                        return req.eventLoop.makeFailedFuture(e)
+                    }
                     if authenticated {
                         guard let subject = user.id?.uuidString else {
-                            throw Abort(HTTPResponseStatus.internalServerError)
+                            return req.eventLoop.makeFailedFuture(Abort(HTTPResponseStatus.internalServerError))
                         }
                         let payload = JWTToken(subject: SubjectClaim(stringLiteral: subject), expiration: .init(value: .distantFuture))
-                        return try req.jwt.sign(payload)
+                        var signedPayload: String!
+                        do {
+                            signedPayload = try req.jwt.sign(payload)
+                        } catch let e {
+                            return req.eventLoop.makeFailedFuture(e)
+                        }
+                        return req.eventLoop.makeSucceededFuture(signedPayload)
                     } else {
-                        throw Abort(.unauthorized, reason: "Invalid Credentials")
+                        return req.eventLoop.makeFailedFuture(Abort(.unauthorized, reason: "Invalid Credentials"))
                     }
                 } else {
-                    let passwordHash = try req.password.hash(userPassword)
-                    let user = User(email: userEmail, password: passwordHash)
-                    let futureUser = user.create(on: req.db).flatMapThrowing { (_) -> String in
+                    var paswordHash: String!
+                    do {
+                        paswordHash = try req.password.hash(userPassword)
+                    } catch let e {
+                        return req.eventLoop.makeFailedFuture(e)
+                    }
+                    let user = User(email: userEmail, password: paswordHash)
+
+                    let payload = user.create(on: req.db).flatMapThrowing { (_) throws -> String in
                         guard let uid = user.id?.uuidString else {
                             throw Abort(HTTPResponseStatus.internalServerError)
-                            
                         }
                         let payload = JWTToken(subject: SubjectClaim(stringLiteral: uid), expiration: .init(value: .distantFuture))
                         return try req.jwt.sign(payload)
                     }
-                    return try futureUser.wait()
+                    return payload
                 }
             }
             return response
