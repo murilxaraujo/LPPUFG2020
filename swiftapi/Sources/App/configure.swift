@@ -5,10 +5,10 @@ import JWT
 
 public func configure(_ app: Application) throws {
     app.databases.use(.postgres(
-                        hostname: Environment.get("dbhost") ?? "localhost",
-                        username: Environment.get("dbusername") ?? "lpp",
-                        password: Environment.get("dbpassword") ?? "senha1234",
-                        database: Environment.get("dbdatabase") ?? "links"),
+                        hostname: Environment.get("DBHOST") ?? "localhost",
+                        username: Environment.get("DBUSERNAME") ?? "lpp",
+                        password: Environment.get("DBPASSWORD") ?? "senha1234",
+                        database: Environment.get("DBDATABASE") ?? "links"),
                       as: .psql)
     app.migrations.add(CreateUsers())
     app.migrations.add(CreateLinks())

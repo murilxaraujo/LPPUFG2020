@@ -40,12 +40,12 @@ final class Link: Model {
     
     public static func newShortKey() -> String {
             let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-            let len = UInt32(letters.length)
+            let len = letters.length
             
             var randomString = ""
             
             for _ in 0 ..< 6 {
-                let rand = arc4random_uniform(len)
+                let rand = Int.random(in: 0...len)
                 var nextChar = letters.character(at: Int(rand))
                 randomString += NSString(characters: &nextChar, length: 1) as String
             }

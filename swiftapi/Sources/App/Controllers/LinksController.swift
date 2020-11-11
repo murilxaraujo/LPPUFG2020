@@ -64,9 +64,6 @@ struct LinksController: RouteCollection {
             let linkToShorten = try req.content.get(String.self, at: "URL")
             let link = Link(user: userid, fullLink: linkToShorten)
             let response = link.create(on: req.db).flatMap { (_) -> EventLoopFuture<String> in
-                guard let id = link.id?.uuidString else {
-                    return req.eventLoop.makeFailedFuture(Abort(HTTPResponseStatus.internalServerError))
-                }
                 return req.eventLoop.makeSucceededFuture(link.short)
             }
             return response
