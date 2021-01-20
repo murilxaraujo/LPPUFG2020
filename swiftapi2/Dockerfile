@@ -9,6 +9,51 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && apt-get -q dist-upgrade -y \
     && rm -rf /var/lib/apt/lists/*
 
+#-------------
+# installing wkhtmltopdf
+# ---------------
+RUN apt-get install -y libpng-dev  pkg-config
+# libjpeg turbo 8
+RUN apt-get install -y wget
+RUN wget http://security.ubuntu.com/ubuntu/pool/main/libj/libjpeg-turbo/libjpeg-turbo8_1.4.2-0ubuntu3.1_amd64.deb -P /var/www/downloads
+RUN dpkg -i /var/www/downloads/libjpeg-turbo8_1.4.2-0ubuntu3.1_amd64.deb
+
+# install libjpeg8
+RUN wget http://mirrors.kernel.org/ubuntu/pool/main/libj/libjpeg8-empty/libjpeg8_8c-2ubuntu8_amd64.deb -P /var/www/downloads
+RUN dpkg -i /var/www/downloads/libjpeg8_8c-2ubuntu8_amd64.deb
+
+# libpng12
+RUN wget http://security.ubuntu.com/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb -P /var/www/downloads
+RUN dpkg -i /var/www/downloads/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
+
+# libssl1.0.0
+RUN wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.0.0_1.0.2g-1ubuntu4.15_amd64.deb -P /var/www/downloads
+RUN dpkg -i /var/www/downloads/libssl1.0.0_1.0.2g-1ubuntu4.15_amd64.deb
+
+# libssl-dev
+RUN wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.0.2g-1ubuntu4.15_amd64.deb -P /var/www/downloads
+RUN dpkg -i /var/www/downloads/libssl-dev_1.0.2g-1ubuntu4.15_amd64.deb
+
+#RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.1/wkhtmltox-0.12.1_linux-wheezy-amd64.deb -P /var/www
+#RUN dpkg -i  /var/www/wkhtmltox-0.12.1_linux-wheezy-amd64.deb
+
+# xfonts-utils
+RUN apt-get install -y xfonts-utils
+#RUN wget http://mirrors.kernel.org/ubuntu/pool/main/x/xfonts-utils/xfonts-utils_7.7+3_amd64.deb -P /var/www/downloads
+#RUN dpkg -i /var/www/downloads/xfonts-utils_7.7+3_amd64.deb
+
+# xfonts-base
+RUN wget http://mirrors.kernel.org/ubuntu/pool/main/x/xfonts-base/xfonts-base_1.0.4+nmu1_all.deb -P /var/www/downloads
+RUN dpkg -i /var/www/downloads/xfonts-base_1.0.4+nmu1_all.deb
+
+# xfont-75dpi
+RUN wget http://mirrors.kernel.org/ubuntu/pool/universe/x/xfonts-75dpi/xfonts-75dpi_1.0.4+nmu1_all.deb -P /var/www/downloads
+RUN dpkg -i /var/www/downloads/xfonts-75dpi_1.0.4+nmu1_all.deb
+
+
+RUN wget https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_0.12.5-1.xenial_amd64.deb -P /var/www
+RUN dpkg -i  /var/www/wkhtmltox_0.12.5-1.xenial_amd64.deb
+
 # Set up a build area
 WORKDIR /build
 
