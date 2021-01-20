@@ -144,15 +144,6 @@
           "revision": "2b06a70dfcfa76a2e5079f60e3ae911511f09db0",
           "version": "2.1.2"
         }
-      },
-      {
-        "package": "wkhtmltopdf",
-        "repositoryURL": "https://github.com/vapor-community/wkhtmltopdf.git",
-        "state": {
-          "branch": null,
-          "revision": "e29131da9b2652ebd8995a288059e95e1ab729f4",
-          "version": "4.0.0"
-        }
       }
     ]
   },

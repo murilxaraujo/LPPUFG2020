@@ -1,6 +1,5 @@
 import Vapor
 import SwiftCSV
-import wkhtmltopdf
 
 func routes(_ app: Application) throws {
     app.get { req in
