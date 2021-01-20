@@ -50,7 +50,7 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
 RUN apt-get update
 RUN apt-get install wget
 RUN wget https://raw.githubusercontent.com/brycesteve/Perfect-View2Pdf/master/wkhtml_install.sh && chmod +x ./wkhtml_install.sh && ./wkhtml_install.sh
-RUN apt-get install ttf-mscorefonts-installer
+RUN echo Y | apt-get install ttf-mscorefonts-installer
 
 # Create a vapor user and group with /app as its home directory
 RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app vapor
