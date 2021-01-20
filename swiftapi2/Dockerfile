@@ -46,10 +46,6 @@ FROM swift:5.3-focal-slim
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
     apt-get -q update && apt-get -q dist-upgrade -y && rm -r /var/lib/apt/lists/*
 
-RUN apt-get update
-RUN echo Y | apt-get install wkhtmltopdf
-RUN echo Y | apt-get install xvfb libfontconfig libxrender1
-
 # Create a vapor user and group with /app as its home directory
 RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app vapor
 

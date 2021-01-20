@@ -21,20 +21,15 @@ func routes(_ app: Application) throws {
         let filteredListNoRepeated = Set(filteredList)
         var pageHtml = "<h1>Deputados Estaduais eleitos por Goiânia</h1><br><p>Nro          -     Nome Candidato       -    Partido<br>"
         for item in filteredListNoRepeated {
-            pageHtml.append("\(item["nro_candidato"])      -     \(item["nome_candidato"])     -      \(item["sigla_partido_politico"])<br>")
+            pageHtml.append("\(item["nro_candidato"] ?? "")      -     \(item["nome_candidato"] ?? "")     -      \(item["sigla_partido_politico"] ?? "")<br>")
         }
         pageHtml.append("</p>")
-        let page = Page(pageHtml)
-        let document = Document(margins:15)
-        document.pages = [page]
-        let pdf = document.generatePDF(on: req.application.threadPool, eventLoop: req.eventLoop)
-        return pdf.map { data in
-            return Response(
-                status: .ok,
-                headers: HTTPHeaders([("Content-Type", "application/pdf")]),
-                body: .init(data: data)
-            )
-        }
+        
+        return req.eventLoop.makeSucceededFuture(Response(
+            status: .ok,
+            headers: HTTPHeaders([("Content-Type", "text/html")]),
+            body: .init(data: pageHtml.data(using: .utf8)!)
+        ))
     }
     
 }
