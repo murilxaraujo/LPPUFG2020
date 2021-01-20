@@ -8,14 +8,16 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
-        .package(url: "https://github.com/swiftcsv/SwiftCSV.git", from: "0.6.0")
+        .package(url: "https://github.com/swiftcsv/SwiftCSV.git", from: "0.6.0"),
+        .package(url: "https://github.com/vapor-community/wkhtmltopdf.git", from: "4.0.0")
     ],
     targets: [
         .target(
             name: "App",
             dependencies: [
                 .product(name: "Vapor", package: "vapor"),
-                "SwiftCSV"
+                "SwiftCSV",
+                "wkhtmltopdf"
             ],
             swiftSettings: [
                 .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))

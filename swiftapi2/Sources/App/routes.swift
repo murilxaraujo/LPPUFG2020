@@ -1,5 +1,6 @@
 import Vapor
 import SwiftCSV
+import wkhtmltopdf
 
 func routes(_ app: Application) throws {
     app.get { req in
@@ -24,11 +25,17 @@ func routes(_ app: Application) throws {
         }
         pageHtml.append("</p>")
         
-        return req.eventLoop.makeSucceededFuture(Response(
-            status: .ok,
-            headers: HTTPHeaders([("Content-Type", "text/html")]),
-            body: .init(data: pageHtml.data(using: .utf8)!)
-        ))
+        let document = Document(margins: 15)
+        let page = Page(pageHtml)
+        document.pages = [page]
+        let pdf = document.generatePDF(on: req.application.threadPool, eventLoop: req.eventLoop)
+        return pdf.map { data in
+            return Response(
+                status: .ok,
+                headers: HTTPHeaders([("Content-Type", "application/pdf")]),
+                body: .init(data: data)
+            )
+        }
     }
     
 }
